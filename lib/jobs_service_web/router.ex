@@ -7,5 +7,7 @@ defmodule JobsServiceWeb.Router do
 
   scope "/api", JobsServiceWeb do
     pipe_through :api
+
+    post "/jobs", JobController, :create
   end
 end

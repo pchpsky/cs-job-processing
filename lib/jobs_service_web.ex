@@ -38,8 +38,7 @@ defmodule JobsServiceWeb do
   def controller do
     quote do
       use Phoenix.Controller,
-        formats: [:html, :json],
-        layouts: [html: JobsServiceWeb.Layouts]
+        formats: [:json]
 
       import Plug.Conn
 
