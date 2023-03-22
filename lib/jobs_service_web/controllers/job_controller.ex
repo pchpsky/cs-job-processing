@@ -2,9 +2,7 @@ defmodule JobsServiceWeb.JobController do
   use JobsServiceWeb, :controller
 
   def create(conn, %{"tasks" => tasks}) do
-    job = JobsService.JobBuilder.build(tasks)
-
-    case job do
+    case JobsService.JobBuilder.build(tasks) do
       {:ok, job} ->
         render(conn, "job.json", job: job)
 

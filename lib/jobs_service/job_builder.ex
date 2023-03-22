@@ -1,18 +1,32 @@
 defmodule JobsService.JobBuilder do
-  def build([]) do
-    {:error, "No tasks provided"}
-  end
-
   def build(tasks) when is_list(tasks) do
-    tasks_ordered = order_tasks(tasks)
-
-    # TODO: detect cycles
-
-    {:ok, %{tasks: tasks_ordered, script: build_script(tasks_ordered)}}
+    if cycled?(tasks) do
+      {:error, "Tasks contain a cycle"}
+    else
+      tasks_ordered = order_tasks(tasks)
+      {:ok, %{tasks: tasks_ordered, script: build_script(tasks_ordered)}}
+    end
   end
 
   def build(_) do
-    {:error, "Tasks must be a list"}
+    {:error, "Tasks must be a non-empty list"}
+  end
+
+  defp cycled?(tasks) do
+    deps = build_deps_map(tasks)
+
+    find_cycle(deps, [], elem(List.first(deps), 0))
+  end
+
+  defp find_cycle(deps, visited, current) do
+    if current in visited do
+      true
+    else
+      deps
+      |> Enum.find(fn {task, _} -> task == current end)
+      |> elem(1)
+      |> Enum.any?(fn task -> find_cycle(deps, visited ++ [current], task) end)
+    end
   end
 
   defp order_tasks(tasks) do
